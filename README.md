@@ -2,13 +2,12 @@
 
 A fast, free, and open-source REST API to fetch LeetCode user profile data — solved problem stats, contest ratings, badges, submission history, and more. Built as a **Vercel serverless function** with a beautiful, responsive frontend.
 
-> **No API key required.** No rate limits. No authentication. Just clean JSON.
-
----
+> [!IMPORTANT]
+> **No API key required. No rate limits. No authentication. Just clean JSON.**
 
 ## 🌐 Live Demo
 
-> After deploying to Vercel, your app will be available at `https://leetpulse-api.vercel.app`
+[🚀 Try LeetPulse Live Here](https://leetpulse-api.vercel.app)
 
 ---
 
@@ -31,8 +30,12 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 ├── api/
 │   └── leetcode.js        # Vercel serverless function (handles all endpoints)
 ├── public/
-│   └── index.html         # Frontend UI (Tailwind CSS, single-file SPA)
+│   ├── index.html         # Frontend UI
+│   └── output.css         # Compiled Tailwind CSS
+├── src/
+│   └── input.css          # Source Tailwind CSS with custom styles
 ├── dev.js                 # Local development server (mimics Vercel)
+├── tailwind.config.js     # Tailwind CSS theme configuration
 ├── vercel.json            # Vercel rewrites for clean URL routing
 ├── package.json
 └── README.md
@@ -62,7 +65,7 @@ npm install
 
 **3. Start the dev server**
 ```bash
-node dev.js
+npm run dev
 ```
 
 The app will be running at **http://localhost:3000**
@@ -115,6 +118,12 @@ https://leetpulse-api.vercel.app
 | Parameter | Applies To | Default | Description |
 |-----------|-----------|---------|-------------|
 | `limit` | `submission`, `acSubmission` | `20` | Number of submissions to return |
+
+**Example:**
+To fetch the 5 most recent accepted submissions for a user:
+```bash
+curl "https://leetpulse-api.vercel.app/api/leetcode/acSubmission/neal_wu?limit=5"
+```
 
 ---
 
