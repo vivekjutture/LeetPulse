@@ -3,7 +3,16 @@
   "version": "2.0.0",
   "description": "LeetPulse — A fast, free REST API to fetch LeetCode user profile details",
   "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i src/input.css -o public/output.css --minify",
+    "watch:css": "tailwindcss -i src/input.css -o public/output.css --watch",
+    "dev": "node dev.js",
+    "build": "tailwindcss -i src/input.css -o public/output.css --minify"
+  },
   "dependencies": {
     "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
   }
 }
