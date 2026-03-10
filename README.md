@@ -7,7 +7,7 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 ## 🌐 Live Demo
 
-🚀 Try LeetPulse Live Here[https://leetpulse-api.vercel.app](https://leetpulse-api.vercel.app)
+🚀 Try LeetPulse Live Here [https://leetpulse-api.vercel.app](https://leetpulse-api.vercel.app)
 
 ---
 
