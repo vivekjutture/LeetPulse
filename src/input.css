@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Base ────────────────────────────────────────── */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ── Background Grid ─────────────────────────────── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Gradients ───────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #ff9500 0%, #ff5e3a 50%, #ff2d55 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-btn {
+  background: linear-gradient(135deg, #ff9500 0%, #ff5e3a 50%, #ff2d55 100%);
+}
+
+/* ── JSON Syntax Highlighting ────────────────────── */
+.json-key { color: #60a5fa; }
+.json-string { color: #34d399; }
+.json-number { color: #ffb340; }
+.json-boolean { color: #a78bfa; }
+.json-null { color: #55556a; }
+
+/* ── Line Numbers ────────────────────────────────── */
+.line-num {
+  color: #3a3a50;
+  user-select: none;
+  text-align: right;
+  padding-right: 1em;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 2.5em;
+  vertical-align: top;
+}
+
+.line-code {
+  padding-left: 1em;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
