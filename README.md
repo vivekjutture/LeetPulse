@@ -26,7 +26,7 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 ## 📂 Project Structure
 
-```
+```bash
 ├── api/
 │   └── leetcode.js        # Vercel serverless function (handles all endpoints)
 ├── public/
@@ -48,54 +48,59 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 ### Local Development
 
 **1. Clone the repository**
+
 ```bash
 git clone https://github.com/vivekjutture/LeetPulse.git
 cd leetpulse
 ```
 
 **2. Install dependencies**
+
 ```bash
 npm install
 ```
 
 **3. Start the dev server**
+
 ```bash
 npm run dev
 ```
+
 ---
 
 ## 📖 API Documentation
 
 All endpoints return **JSON** and follow the pattern:
 
-```
+```bash
 GET /api/leetcode/<endpoint>/<username>
 ```
 
 **Base URL (after deployment):**
-```
+
+```bash
 https://leetpulse-api.vercel.app
 ```
 
 ### Available Endpoints
 
-| Endpoint | URL Pattern | Description |
-|----------|-------------|-------------|
-| **Full** | `/api/leetcode/full/<username>` | Complete profile — all data combined |
-| **Profile** | `/api/leetcode/profile/<username>` | Name, avatar, ranking, reputation, bio, links |
-| **Solved** | `/api/leetcode/solved/<username>` | Total solved, easy/medium/hard breakdown |
-| **Badges** | `/api/leetcode/badges/<username>` | Earned badges, upcoming badges, active badge |
-| **Contest** | `/api/leetcode/contest/<username>` | Contest rating, global ranking, history |
-| **Submission** | `/api/leetcode/submission/<username>` | Recent submissions (title, language, status) |
-| **AC Submission** | `/api/leetcode/acSubmission/<username>` | Accepted submissions only |
-| **Language** | `/api/leetcode/language/<username>` | Problems solved per programming language |
-| **Skill** | `/api/leetcode/skill/<username>` | Skill tags: advanced, intermediate, fundamental |
+| Endpoint          | URL Pattern                             | Description                                     |
+| ----------------- | --------------------------------------- | ----------------------------------------------- |
+| **Full**          | `/api/leetcode/full/<username>`         | Complete profile — all data combined            |
+| **Profile**       | `/api/leetcode/profile/<username>`      | Name, avatar, ranking, reputation, bio, links   |
+| **Solved**        | `/api/leetcode/solved/<username>`       | Total solved, easy/medium/hard breakdown        |
+| **Badges**        | `/api/leetcode/badges/<username>`       | Earned badges, upcoming badges, active badge    |
+| **Contest**       | `/api/leetcode/contest/<username>`      | Contest rating, global ranking, history         |
+| **Submission**    | `/api/leetcode/submission/<username>`   | Recent submissions (title, language, status)    |
+| **AC Submission** | `/api/leetcode/acSubmission/<username>` | Accepted submissions only                       |
+| **Language**      | `/api/leetcode/language/<username>`     | Problems solved per programming language        |
+| **Skill**         | `/api/leetcode/skill/<username>`        | Skill tags: advanced, intermediate, fundamental |
 
 ### Optional Query Parameters
 
-| Parameter | Applies To | Default | Description |
-|-----------|-----------|---------|-------------|
-| `limit` | `submission`, `acSubmission` | `20` | Number of submissions to return |
+| Parameter | Applies To                   | Default | Description                     |
+| --------- | ---------------------------- | ------- | ------------------------------- |
+| `limit`   | `submission`, `acSubmission` | `20`    | Number of submissions to return |
 
 ---
 
@@ -104,16 +109,19 @@ https://leetpulse-api.vercel.app
 ### cURL
 
 **Get solved stats**
+
 ```bash
 curl https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu
 ```
 
 **Get full profile**
+
 ```bash
 curl https://leetpulse-api.vercel.app/api/leetcode/full/tourist
 ```
 
 **Get recent submissions (limit 5)**
+
 ```bash
 curl "https://leetpulse-api.vercel.app/api/leetcode/submission/neal_wu?limit=5"
 ```
@@ -121,24 +129,28 @@ curl "https://leetpulse-api.vercel.app/api/leetcode/submission/neal_wu?limit=5"
 ### JavaScript (Fetch)
 
 ```javascript
-const response = await fetch('https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu');
+const response = await fetch(
+  "https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu",
+);
 const data = await response.json();
 console.log(`Total solved: ${data.solvedProblem}`);
-console.log(`Easy: ${data.easySolved}, Medium: ${data.mediumSolved}, Hard: ${data.hardSolved}`);
+console.log(
+  `Easy: ${data.easySolved}, Medium: ${data.mediumSolved}, Hard: ${data.hardSolved}`,
+);
 ```
 
 ### React / Next.js
 
 ```jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function LeetCodeStats({ username }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
     fetch(`https://leetpulse-api.vercel.app/api/leetcode/solved/${username}`)
-      .then(res => res.json())
-      .then(data => setStats(data));
+      .then((res) => res.json())
+      .then((data) => setStats(data));
   }, [username]);
 
   if (!stats) return <p>Loading...</p>;
@@ -170,12 +182,12 @@ print(f"Top: {data['contestTopPercentage']}%")
 
 ### Postman / SoapUI
 
-| Field | Value |
-|-------|-------|
-| **Method** | `GET` |
-| **URL** | `https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu` |
-| **Headers** | None required |
-| **Auth** | None required |
+| Field       | Value                                                          |
+| ----------- | -------------------------------------------------------------- |
+| **Method**  | `GET`                                                          |
+| **URL**     | `https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu` |
+| **Headers** | None required                                                  |
+| **Auth**    | None required                                                  |
 
 Simply paste the URL and hit **Send**. No configuration needed.
 
@@ -235,7 +247,7 @@ Simply paste the URL and hit **Send**. No configuration needed.
 
 ## 🏗️ How It Works
 
-```
+```bash
 Client Request
      │
      ▼
@@ -257,13 +269,13 @@ Client Request
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | HTML, Tailwind CSS (CDN), Vanilla JavaScript |
-| **Backend** | Vercel Serverless Functions (Node.js) |
-| **API Source** | LeetCode GraphQL (public, no auth) |
-| **Deployment** | Vercel (free tier) |
-| **HTTP Client** | `node-fetch` |
+| Layer           | Technology                                   |
+| --------------- | -------------------------------------------- |
+| **Frontend**    | HTML, Tailwind CSS (CDN), Vanilla JavaScript |
+| **Backend**     | Vercel Serverless Functions (Node.js)        |
+| **API Source**  | LeetCode GraphQL (public, no auth)           |
+| **Deployment**  | Vercel (free tier)                           |
+| **HTTP Client** | `node-fetch`                                 |
 
 ---
 

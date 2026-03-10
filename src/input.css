@@ -28,11 +28,21 @@ body {
 }
 
 /* ── JSON Syntax Highlighting ────────────────────── */
-.json-key { color: #60a5fa; }
-.json-string { color: #34d399; }
-.json-number { color: #ffb340; }
-.json-boolean { color: #a78bfa; }
-.json-null { color: #55556a; }
+.json-key {
+  color: #60a5fa;
+}
+.json-string {
+  color: #34d399;
+}
+.json-number {
+  color: #ffb340;
+}
+.json-boolean {
+  color: #a78bfa;
+}
+.json-null {
+  color: #55556a;
+}
 
 /* ── Line Numbers ────────────────────────────────── */
 .line-num {
@@ -52,7 +62,16 @@ body {
 }
 
 /* ── Scrollbar ───────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

@@ -194,10 +194,14 @@ async function fetchEndpoint(endpoint, username, params = {}) {
       return {
         allQuestionsCount: data.allQuestionsCount,
         acSubmissionNum,
-        solvedProblem: acSubmissionNum.find((s) => s.difficulty === "All")?.count || 0,
-        easySolved: acSubmissionNum.find((s) => s.difficulty === "Easy")?.count || 0,
-        mediumSolved: acSubmissionNum.find((s) => s.difficulty === "Medium")?.count || 0,
-        hardSolved: acSubmissionNum.find((s) => s.difficulty === "Hard")?.count || 0,
+        solvedProblem:
+          acSubmissionNum.find((s) => s.difficulty === "All")?.count || 0,
+        easySolved:
+          acSubmissionNum.find((s) => s.difficulty === "Easy")?.count || 0,
+        mediumSolved:
+          acSubmissionNum.find((s) => s.difficulty === "Medium")?.count || 0,
+        hardSolved:
+          acSubmissionNum.find((s) => s.difficulty === "Hard")?.count || 0,
       };
     }
 
@@ -215,7 +219,10 @@ async function fetchEndpoint(endpoint, username, params = {}) {
     }
 
     case "acSubmission": {
-      const data = await queryLeetCode(QUERIES.acSubmission, { username, limit });
+      const data = await queryLeetCode(QUERIES.acSubmission, {
+        username,
+        limit,
+      });
       return { recentAcSubmissions: data.recentAcSubmissionList };
     }
 
@@ -278,7 +285,9 @@ module.exports = async function handler(req, res) {
   const { username, endpoint = "full", limit, year } = req.query;
 
   if (!username) {
-    return res.status(400).json({ error: "Missing required query parameter: username" });
+    return res
+      .status(400)
+      .json({ error: "Missing required query parameter: username" });
   }
 
   try {

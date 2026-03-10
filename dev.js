@@ -69,12 +69,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Serve static files from public/
-  let filePath = path.join(PUBLIC_DIR, pathname === "/" ? "index.html" : pathname);
+  let filePath = path.join(
+    PUBLIC_DIR,
+    pathname === "/" ? "index.html" : pathname,
+  );
   const ext = path.extname(filePath);
 
   try {
     const content = fs.readFileSync(filePath);
-    res.setHeader("Content-Type", MIME_TYPES[ext] || "application/octet-stream");
+    res.setHeader(
+      "Content-Type",
+      MIME_TYPES[ext] || "application/octet-stream",
+    );
     res.writeHead(200);
     res.end(content);
   } catch (e) {
