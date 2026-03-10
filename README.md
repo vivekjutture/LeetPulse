@@ -7,7 +7,7 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 ## 🌐 Live Demo
 
-[🚀 Try LeetPulse Live Here](https://leetpulse-api.vercel.app)
+🚀 Try LeetPulse Live Here[https://leetpulse-api.vercel.app](https://leetpulse-api.vercel.app)
 
 ---
 
@@ -45,11 +45,6 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 ## 🚀 Getting Started
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18+)
-- [Vercel CLI](https://vercel.com/cli) (for deployment)
-
 ### Local Development
 
 **1. Clone the repository**
@@ -67,23 +62,6 @@ npm install
 ```bash
 npm run dev
 ```
-
-The app will be running at **http://localhost:3000**
-
-### Deploy to Vercel (Free)
-
-**Install Vercel CLI (one-time)**
-```bash
-npm i -g vercel
-```
-
-**Deploy**
-```bash
-vercel
-```
-
-Follow the prompts and your API will be live at `https://leetpulse-api.vercel.app` 🎉
-
 ---
 
 ## 📖 API Documentation
@@ -118,12 +96,6 @@ https://leetpulse-api.vercel.app
 | Parameter | Applies To | Default | Description |
 |-----------|-----------|---------|-------------|
 | `limit` | `submission`, `acSubmission` | `20` | Number of submissions to return |
-
-**Example:**
-To fetch the 5 most recent accepted submissions for a user:
-```bash
-curl "https://leetpulse-api.vercel.app/api/leetcode/acSubmission/neal_wu?limit=5"
-```
 
 ---
 
