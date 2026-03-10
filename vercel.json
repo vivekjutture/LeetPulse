@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/leetcode/:endpoint/:username",
+      "destination": "/api/leetcode?endpoint=:endpoint&username=:username"
+    },
+    {
+      "source": "/api/leetcode",
+      "destination": "/api/leetcode"
+    }
+  ]
+}

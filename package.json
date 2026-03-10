@@ -1,0 +1,9 @@
+{
+  "name": "leetpulse",
+  "version": "2.0.0",
+  "description": "LeetPulse — A fast, free REST API to fetch LeetCode user profile details",
+  "private": true,
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeetPulse — Fetch LeetCode Stats Instantly</title>
+  <meta name="description" content="LeetPulse — A fast, free REST API to fetch LeetCode user profile details, solved stats, contest ratings, badges, and more by username." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+          },
+          colors: {
+            surface: {
+              DEFAULT: '#0a0a0f',
+              card: 'rgba(255,255,255,0.03)',
+              hover: 'rgba(255,255,255,0.06)',
+              secondary: '#12121a',
+            },
+            accent: {
+              orange: '#ff9500',
+              amber: '#ffb340',
+            },
+          },
+          animation: {
+            'pulse-dot': 'pulseDot 2s ease-in-out infinite',
+            'spin-slow': 'spin 1s linear infinite',
+          },
+          keyframes: {
+            pulseDot: {
+              '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+              '50%': { opacity: '0.5', transform: 'scale(0.8)' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #ff9500 0%, #ff5e3a 50%, #ff2d55 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-btn {
+      background: linear-gradient(135deg, #ff9500 0%, #ff5e3a 50%, #ff2d55 100%);
+    }
+    .json-key { color: #60a5fa; }
+    .json-string { color: #34d399; }
+    .json-number { color: #ffb340; }
+    .json-boolean { color: #a78bfa; }
+    .json-null { color: #55556a; }
+    .line-num { color: #3a3a50; user-select: none; text-align: right; padding-right: 1em; border-right: 1px solid rgba(255,255,255,0.06); min-width: 2.5em; vertical-align: top; }
+    .line-code { padding-left: 1em; white-space: pre-wrap; word-break: break-all; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body class="bg-surface text-gray-100 min-h-screen overflow-x-hidden">
+
+  <!-- Full-page loader overlay -->
+  <div id="loaderOverlay" class="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="flex flex-col items-center gap-4">
+      <div class="w-12 h-12 border-4 border-white/20 border-t-orange-500 rounded-full animate-spin-slow"></div>
+      <p class="text-gray-300 text-sm font-medium">Fetching data from LeetCode...</p>
+    </div>
+  </div>
+
+  <!-- Error modal overlay -->
+  <div id="errorModal" class="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center hidden" onclick="if(event.target===this)hideErrorModal()">
+    <div class="bg-surface-secondary border border-red-500/20 rounded-2xl p-6 sm:p-8 max-w-sm w-[90%] shadow-[0_0_60px_rgba(255,50,50,0.15)] text-center">
+      <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      </div>
+      <h3 class="text-white font-bold text-lg mb-2" id="errorModalTitle">Error</h3>
+      <p class="text-gray-400 text-sm leading-relaxed mb-6" id="errorModalMessage">Something went wrong.</p>
+      <button onclick="hideErrorModal()" class="w-full py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-semibold text-sm cursor-pointer hover:bg-red-500/20 transition-colors">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- Background effects -->
+  <div class="bg-grid fixed inset-0 pointer-events-none z-0"></div>
+  <div class="fixed -top-24 -right-24 w-[500px] h-[500px] rounded-full bg-orange-500 opacity-15 blur-[120px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-[30%] -left-36 w-[500px] h-[500px] rounded-full bg-purple-500 opacity-[0.08] blur-[120px] pointer-events-none z-0"></div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[rgba(10,10,15,0.8)] border-b border-white/[0.06]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 font-extrabold text-lg text-white no-underline">
+        <span class="w-8 h-8 rounded-lg gradient-btn flex items-center justify-center text-sm">⚡</span>
+        LeetPulse
+      </a>
+      <nav>
+        <ul class="flex gap-4 sm:gap-6 list-none items-center">
+          <li><a href="https://github.com" target="_blank" class="text-gray-400 hover:text-white text-sm font-medium transition-colors">API Docs</a></li>
+          <li>
+            <a href="https://github.com" target="_blank" class="text-gray-400 hover:text-white transition-colors flex items-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="pt-32 sm:pt-40 pb-12 sm:pb-20 text-center relative z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-7">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-dot"></span>
+        Open Source · Free · No Auth
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] mb-5 tracking-tight">
+        Fetch <span class="gradient-text">LeetCode</span><br />
+        Profile Data Instantly
+      </h1>
+
+      <p class="text-base sm:text-lg text-gray-400 max-w-xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4">
+        A lightweight REST API that returns user profiles, solved problem stats,
+        contest ratings, badges, submission history, and more — all by username.
+      </p>
+
+      <!-- Input Box -->
+      <div class="max-w-xl mx-auto mb-5 px-4 sm:px-0">
+        <div class="flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-white/[0.06] bg-surface-secondary focus-within:border-orange-500/40 focus-within:ring-[3px] focus-within:ring-orange-500/10 transition-all">
+          <div class="flex items-center min-w-0 flex-1">
+            <span class="flex items-center pl-5 pr-1 py-3.5 text-gray-500 font-mono text-sm whitespace-nowrap select-none" id="prefixDisplay">GET&nbsp;full/</span>
+            <input
+              type="text"
+              class="flex-1 min-w-0 bg-transparent border-none outline-none px-1 py-3.5 text-gray-100 font-mono text-sm text-left"
+              id="usernameInput"
+              placeholder="username"
+              value="neal_wu"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <button
+            class="gradient-btn text-white border-none cursor-pointer font-sans font-bold text-sm px-7 py-3.5 sm:py-0 mx-2 mb-2 sm:mx-0 sm:mb-0 rounded-xl sm:rounded-none transition-all duration-150"
+            id="fetchBtn"
+            onclick="fetchProfile()"
+          >
+            Fetch →
+          </button>
+        </div>
+        <p class="text-center text-gray-600 text-xs mt-3">Try: <strong class="text-gray-500">neal_wu</strong>, <strong class="text-gray-500">uwi</strong>, <strong class="text-gray-500">tourist</strong></p>
+      </div>
+
+      <!-- Endpoint Tabs -->
+      <div class="flex flex-wrap gap-2 justify-center mb-5 max-w-xl mx-auto px-4 sm:px-0" id="endpointTabs">
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border text-xs font-mono cursor-pointer transition-all bg-orange-500/[0.12] border-orange-500/30 text-amber-400" data-endpoint="full">full</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="profile">profile</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="solved">solved</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="badges">badges</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="contest">contest</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="submission">submission</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="language">language</button>
+        <button class="endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white" data-endpoint="skill">skill</button>
+      </div>
+
+      <!-- JSON Preview -->
+      <div class="max-w-4xl mx-auto rounded-2xl border border-white/[0.06] bg-surface-secondary overflow-hidden hover:border-orange-500/15 transition-colors text-left" id="jsonPreview">
+        <div class="flex items-center justify-between px-4 sm:px-5 py-3 bg-white/[0.02] border-b border-white/[0.06]">
+          <div class="flex gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f57]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#febc2e]"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#28c840]"></span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-xs text-gray-600" id="jsonStatus">Ready</span>
+            <button class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-white/[0.06] bg-white/[0.04] text-gray-400 text-xs font-medium cursor-pointer transition-all hover:bg-white/[0.08] hover:border-orange-500/30 hover:text-white" id="copyBtn" onclick="copyJson()" title="Copy JSON">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="copy-btn-label">Copy</span>
+            </button>
+          </div>
+        </div>
+        <div class="p-0 max-h-[400px] overflow-y-auto">
+          <table class="w-full font-mono text-xs sm:text-sm leading-7 text-gray-400 border-collapse" id="jsonOutput">
+            <tr><td class="line-num">1</td><td class="line-code">// Click "Fetch" to see live results</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="py-10 border-t border-white/[0.06] text-center relative z-10">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <p class="text-gray-600 text-sm">Built with ☕ — Powered by LeetCode's public GraphQL endpoint</p>
+    </div>
+  </footer>
+
+  <script>
+    let activeEndpoint = "full";
+    let lastJsonRaw = "";
+
+    // Tab click handling
+    document.getElementById("endpointTabs").addEventListener("click", (e) => {
+      const tab = e.target.closest(".endpoint-tab");
+      if (!tab) return;
+
+      document.querySelectorAll(".endpoint-tab").forEach((t) => {
+        t.className = "endpoint-tab px-3 py-1.5 rounded-full border border-white/[0.06] bg-surface-card text-gray-400 text-xs font-mono cursor-pointer transition-all hover:border-orange-500/30 hover:text-white";
+      });
+      tab.className = "endpoint-tab px-3 py-1.5 rounded-full border text-xs font-mono cursor-pointer transition-all bg-orange-500/[0.12] border-orange-500/30 text-amber-400";
+      activeEndpoint = tab.dataset.endpoint;
+      document.getElementById("prefixDisplay").innerHTML = `GET&nbsp;${activeEndpoint}/`;
+    });
+
+    // Fetch on Enter key
+    document.getElementById("usernameInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fetchProfile();
+    });
+
+    // Syntax highlight JSON and produce table rows with line numbers
+    function syntaxHighlight(json) {
+      if (typeof json !== "string") json = JSON.stringify(json, null, 2);
+      json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      json = json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\bnull\b)/g,
+        function (match) {
+          let cls = "json-number";
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? "json-key" : "json-string";
+          } else if (/true|false/.test(match)) {
+            cls = "json-boolean";
+          } else if (/null/.test(match)) {
+            cls = "json-null";
+          }
+          return '<span class="' + cls + '">' + match + "</span>";
+        }
+      );
+      return json.split('\n').map((line, i) =>
+        `<tr><td class="line-num">${i + 1}</td><td class="line-code">${line || ' '}</td></tr>`
+      ).join('');
+    }
+
+    // Show / hide loader
+    function showLoader() {
+      document.getElementById("loaderOverlay").classList.remove("hidden");
+    }
+    function hideLoader() {
+      document.getElementById("loaderOverlay").classList.add("hidden");
+    }
+
+    // Error modal
+    function showErrorModal(title, message) {
+      document.getElementById("errorModalTitle").textContent = title;
+      document.getElementById("errorModalMessage").textContent = message;
+      document.getElementById("errorModal").classList.remove("hidden");
+    }
+    function hideErrorModal() {
+      document.getElementById("errorModal").classList.add("hidden");
+    }
+
+    // Fetch profile data
+    async function fetchProfile() {
+      const username = document.getElementById("usernameInput").value.trim();
+      if (!username) return;
+
+      const statusEl = document.getElementById("jsonStatus");
+      const outputEl = document.getElementById("jsonOutput");
+      const btn = document.getElementById("fetchBtn");
+
+      // Button press feedback
+      btn.style.opacity = "0.7";
+      btn.style.transform = "scale(0.96)";
+      setTimeout(() => {
+        btn.style.opacity = "1";
+        btn.style.transform = "scale(1)";
+      }, 150);
+
+      // Show full-page loader
+      showLoader();
+
+      const apiUrl = `/api/leetcode/${activeEndpoint}/${encodeURIComponent(username)}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        lastJsonRaw = JSON.stringify(data, null, 2);
+
+        if (!response.ok) {
+          statusEl.className = "font-mono text-xs text-red-400";
+          statusEl.textContent = `${response.status} Error`;
+          outputEl.innerHTML = syntaxHighlight(data);
+          const errMsg = data.error || `Request failed with status ${response.status}`;
+          if (response.status === 404) {
+            showErrorModal("User Not Found", errMsg);
+          } else {
+            showErrorModal(`Error ${response.status}`, errMsg);
+          }
+        } else {
+          statusEl.className = "font-mono text-xs text-emerald-400";
+          statusEl.textContent = "200 OK";
+          outputEl.innerHTML = syntaxHighlight(data);
+        }
+      } catch (err) {
+        statusEl.className = "font-mono text-xs text-red-400";
+        statusEl.textContent = "Error";
+        outputEl.innerHTML = `<tr><td class="line-num">1</td><td class="line-code">// ${err.message}</td></tr>`;
+        lastJsonRaw = "";
+        showErrorModal("Network Error", err.message);
+      } finally {
+        hideLoader();
+      }
+    }
+
+    // Copy JSON
+    async function copyJson() {
+      if (!lastJsonRaw) return;
+      try {
+        await navigator.clipboard.writeText(lastJsonRaw);
+        const btn = document.getElementById("copyBtn");
+        const label = btn.querySelector(".copy-btn-label");
+        label.textContent = "Copied!";
+        btn.classList.add("!border-emerald-400/40", "!text-emerald-400", "!bg-emerald-400/[0.08]");
+        setTimeout(() => {
+          label.textContent = "Copy";
+          btn.classList.remove("!border-emerald-400/40", "!text-emerald-400", "!bg-emerald-400/[0.08]");
+        }, 2000);
+      } catch (err) {
+        console.error("Copy failed", err);
+      }
+    }
+  </script>
+</body>
+</html>
