@@ -8,7 +8,7 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 ## 🌐 Live Demo
 
-> After deploying to Vercel, your app will be available at `https://your-project.vercel.app`
+> After deploying to Vercel, your app will be available at `https://leetpulse-api.vercel.app`
 
 ---
 
@@ -51,7 +51,7 @@ A fast, free, and open-source REST API to fetch LeetCode user profile data — s
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/your-username/leetpulse.git
+git clone https://github.com/vivekjutture/LeetPulse.git
 cd leetpulse
 ```
 
@@ -79,7 +79,7 @@ npm i -g vercel
 vercel
 ```
 
-Follow the prompts and your API will be live at `https://your-project.vercel.app` 🎉
+Follow the prompts and your API will be live at `https://leetpulse-api.vercel.app` 🎉
 
 ---
 
@@ -93,7 +93,7 @@ GET /api/leetcode/<endpoint>/<username>
 
 **Base URL (after deployment):**
 ```
-https://your-project.vercel.app
+https://leetpulse-api.vercel.app
 ```
 
 ### Available Endpoints
@@ -124,23 +124,23 @@ https://your-project.vercel.app
 
 **Get solved stats**
 ```bash
-curl https://your-project.vercel.app/api/leetcode/solved/neal_wu
+curl https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu
 ```
 
 **Get full profile**
 ```bash
-curl https://your-project.vercel.app/api/leetcode/full/tourist
+curl https://leetpulse-api.vercel.app/api/leetcode/full/tourist
 ```
 
 **Get recent submissions (limit 5)**
 ```bash
-curl "https://your-project.vercel.app/api/leetcode/submission/neal_wu?limit=5"
+curl "https://leetpulse-api.vercel.app/api/leetcode/submission/neal_wu?limit=5"
 ```
 
 ### JavaScript (Fetch)
 
 ```javascript
-const response = await fetch('https://your-project.vercel.app/api/leetcode/solved/neal_wu');
+const response = await fetch('https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu');
 const data = await response.json();
 console.log(`Total solved: ${data.solvedProblem}`);
 console.log(`Easy: ${data.easySolved}, Medium: ${data.mediumSolved}, Hard: ${data.hardSolved}`);
@@ -155,7 +155,7 @@ function LeetCodeStats({ username }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch(`https://your-project.vercel.app/api/leetcode/solved/${username}`)
+    fetch(`https://leetpulse-api.vercel.app/api/leetcode/solved/${username}`)
       .then(res => res.json())
       .then(data => setStats(data));
   }, [username]);
@@ -179,7 +179,7 @@ function LeetCodeStats({ username }) {
 ```python
 import requests
 
-response = requests.get('https://your-project.vercel.app/api/leetcode/contest/neal_wu')
+response = requests.get('https://leetpulse-api.vercel.app/api/leetcode/contest/neal_wu')
 data = response.json()
 
 print(f"Rating: {data['contestRating']}")
@@ -192,7 +192,7 @@ print(f"Top: {data['contestTopPercentage']}%")
 | Field | Value |
 |-------|-------|
 | **Method** | `GET` |
-| **URL** | `https://your-project.vercel.app/api/leetcode/solved/neal_wu` |
+| **URL** | `https://leetpulse-api.vercel.app/api/leetcode/solved/neal_wu` |
 | **Headers** | None required |
 | **Auth** | None required |
 
